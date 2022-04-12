@@ -20,7 +20,7 @@
 	# Il cron è gestito dal controller Cron
 	# creare automatismo per eseguire chiamata e inserire il parametro cron:
 
-	# Curl POST http://saas.bento.eutel.cloud:3200/api/v1/cron
+	# Curl POST http://localhost:3200/api/v1/cron
 	{
 		"cron":1
 	}
@@ -88,7 +88,6 @@ $router->prefix('dev/', function() use ($router){
 /**
  * TESTING
  */
-// http://saas.bento.eutel.cloud:3200/api/v1/time
 $router->prefix('api/', function() use ($router){
 	$router->group('v1/', function() use ($router) {
 		$router->map('GET', 'time', 'v1\Test@time');
