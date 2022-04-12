@@ -6,12 +6,12 @@ use Core\Utilities\Util;
 
 class Response {
 
-    public static function redirect($url, $status){
+	public static function redirect($url, $status){
 
-        header('Location: '.$url, true, $status);
-    }
+		header('Location: '.$url, true, $status);
+	}
 
-    public static function serverAddr() : string {
-        return $_SERVER['SERVER_ADDR'];
-    }
+	public static function serverAddr() : string {
+		return $_SERVER['SERVER_ADDR'];
+	}
 }

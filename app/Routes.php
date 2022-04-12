@@ -1,7 +1,7 @@
 <?php
 
 /** 
- | |              | |       
+ | |			  | |	   
  | |__   ___ _ __ | |_ ___  
  | '_ \ / _ \ '_ \| __/ _ \ 
  | |_) |  __/ | | | || (_) |
@@ -59,13 +59,13 @@ $router->prefix('api/', function() use ($router){
 	
 	# Il sistema accetta come middleware più tipologie di auth tra cui:
 	#
-	# Tipologia     Metodo              Parametri
+	# Tipologia	 Metodo			  Parametri
 	# -------------------------------------------
-	# Bearer        Header               Authorization: Bearer <token>
-	# Token         Header|POST          token=<token>
-	# User          POST                 username=<username>&&password=<password>
-	# Basic         Header               username:password || base64_encode(username:password)
-	# JWT           POST|Cookie          auth_jwt=<token>
+	# Bearer		Header			   Authorization: Bearer <token>
+	# Token		 Header|POST		  token=<token>
+	# User		  POST				 username=<username>&&password=<password>
+	# Basic		 Header			   username:password || base64_encode(username:password)
+	# JWT		   POST|Cookie		  auth_jwt=<token>
 */
 $router->prefix('auth/', function() use ($router){
 	$router->group('v1/', function() use ($router) {

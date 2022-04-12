@@ -4,7 +4,7 @@ namespace App\Config;
 
 use App\Config\Mysql as MysqlConfig;
 use Core\{
-    Utilities\Util,
+	Utilities\Util,
 };
 
 class Database {

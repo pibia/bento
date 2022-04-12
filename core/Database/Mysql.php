@@ -17,14 +17,14 @@ class Mysql {
 
 	private $stmt;
 
-    public function __construct(){
+	public function __construct(){
 		
 		$conf = Database::getInstance()->mysql();
 
-        $this->host = $conf['host'];
-        $this->user = $conf['user'];
-        $this->pass = $conf['pass'];
-        $this->dbname = $conf['dbname'];
+		$this->host = $conf['host'];
+		$this->user = $conf['user'];
+		$this->pass = $conf['pass'];
+		$this->dbname = $conf['dbname'];
 
 		$this->connect();
 		
@@ -33,20 +33,20 @@ class Mysql {
 		unset($this->pass);
 		unset($this->dbname);
 
-    }
+	}
 
-    public function connect(){
+	public function connect(){
 		try{
 			$this->db = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->dbname.';charset=UTF8', $this->user, $this->pass, Array(
-                PDO::ATTR_PERSISTENT => true,
-    			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            ));
+				PDO::ATTR_PERSISTENT => true,
+				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+			));
 		} catch(PDOException $e){
 			$this->error = $e->getMessage();
 		}
-    }
+	}
 
-    public function query($query){
+	public function query($query){
 		$this->stmt = $this->db->prepare($query);
 
 	}

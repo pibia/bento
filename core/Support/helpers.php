@@ -2,18 +2,18 @@
 
 
 function public_path(string $file = null){
-    if($file){
-        return dirname(dirname(dirname(__FILE__))).'/www'.'/'.$file;
-    }
+	if($file){
+		return dirname(dirname(dirname(__FILE__))).'/www'.'/'.$file;
+	}
 
-    return dirname(dirname(dirname(__FILE__))).'/www';
+	return dirname(dirname(dirname(__FILE__))).'/www';
 }
 
 
 function base_path(string $file = null){
-    if($file){
-        return dirname(dirname(dirname(__FILE__))).'/'.$file;
-    }
+	if($file){
+		return dirname(dirname(dirname(__FILE__))).'/'.$file;
+	}
 
-    return dirname(dirname(dirname(__FILE__)));
+	return dirname(dirname(dirname(__FILE__)));
 }

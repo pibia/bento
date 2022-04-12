@@ -9,33 +9,33 @@ require_once __DIR__.'/../core/Support/helpers.php';
 
 class kernel {
 
-    private $mode = 'stage';
+	private $mode = 'stage';
 
-    private function invokeHandlers(){
-        set_error_handler('Core\Errors\Handler::errorHandler');
-        set_exception_handler('Core\Errors\Handler::exceptionHandler');
-    }
+	private function invokeHandlers(){
+		set_error_handler('Core\Errors\Handler::errorHandler');
+		set_exception_handler('Core\Errors\Handler::exceptionHandler');
+	}
 
-    public function mode($mode = false){
-        if(!$mode&&in_array($mode, ['stage', 'prod'])){
-            $this->mode = $mode;
-        }
+	public function mode($mode = false){
+		if(!$mode&&in_array($mode, ['stage', 'prod'])){
+			$this->mode = $mode;
+		}
 
-        return $this;
-    }
+		return $this;
+	}
 
-    public function run(){
-        
-        $this->invokeHandlers();
+	public function run(){
+		
+		$this->invokeHandlers();
 
-        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
-        $dotenv->load();
+		$dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
+		$dotenv->load();
 
-        $router = new Router();
-        require_once __DIR__.'/../app/Routes.php';
-        $router->run();
-        
-    }
+		$router = new Router();
+		require_once __DIR__.'/../app/Routes.php';
+		$router->run();
+		
+	}
 }
 
 

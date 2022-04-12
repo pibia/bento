@@ -13,8 +13,6 @@ use Core\{
 use App\Classes\Composer;
 
 class test extends Main {
-
-	// $this->request
 	
 	public function composer(){
 		util::dump(Composer::load());
