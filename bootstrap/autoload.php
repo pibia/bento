@@ -1,44 +1,51 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
-require_once __DIR__.'/../core/Support/helpers.php';
+namespace Bootstrap;
+
+try {
+	if (!@include_once(__DIR__ . '/../vendor/autoload.php')) {
+		throw new Exception('Composer is not initialized');
+	}
+} catch (Exception $e) {
+	exit($e->getMessage());
+}
+
+require_once __DIR__ . '/../core/Support/helpers.php';
 
 use Core\{
 	Routing\Router,
 	Utilities\Util,
 };
 
-class kernel {
+use \Dotenv\Dotenv as Env;
 
-	private $mode = 'stage';
-	private $file = 'file';
-	public $input;
+final class Kernel
+{
 
-	private function invokeHandlers(){
-		set_error_handler('Core\Errors\Handler::errorHandler');
-		set_exception_handler('Core\Errors\Handler::exceptionHandler');
+	protected $mode = 'stage';
+
+	public static function env()
+	{
+		(Env::createImmutable(__DIR__ . '/../'))->load();
+	}
+	public static function invokeHandlers($error, $exception)
+	{
+		set_error_handler($error);
+		set_exception_handler($exception);
 	}
 
-	public function mode($mode = false){
-		if(!$mode&&in_array($mode, ['stage', 'prod'])){
-			$this->mode = $mode;
+	public static function mode($mode = false)
+	{
+		if (!$mode && in_array($mode, ['stage', 'prod'])) {
+			self::$mode = $mode;
 		}
-
-		return $this;
 	}
 
-	public function run(){
-		
-		$this->invokeHandlers();
-
-		$dotenv = Dotenv\Dotenv::createImmutable(__DIR__.'/../');
-		$dotenv->load();
+	public static function run()
+	{
 
 		$router = new Router();
-		require_once __DIR__.'/../app/Routes.php';
+		require_once __DIR__ . '/../app/Routes.php';
 		$router->run();
-		
 	}
 }
-
-

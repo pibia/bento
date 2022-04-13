@@ -1,17 +1,33 @@
 <?php
 
+namespace Index;
+
 /**
- * Includo e istanzio l'autoloader presente in /bootstrap/autoload.php
+ * Define Error Handlers
+ */
+define('ErrorHandler', 'Core\Errors\Handler::errorHandler');
+define('ErrorException', 'Core\Errors\Handler::exceptionHandler');
+
+/**
+ * Define timezone
+ */
+define('Timezone', 'Europe/Rome');
+
+date_default_timezone_set(Timezone);
+
+/**
+ * Start with bootstrap autoloader
  */
 require __DIR__.'/../bootstrap/autoload.php';
 
-$kernel = new Kernel();
+use Bootstrap\Kernel;
 
 /**
- * Impoto la modalità del sistema stage|prod
- * Eseguo il run (handlers + routing)
+ * Set mode stage | prod
  */
 
-$kernel->mode('stage');
-$kernel->run();
+Kernel::mode('stage');
+Kernel::invokeHandlers(ErrorHandler, ErrorException);
+Kernel::env();
+Kernel::run();
 	
