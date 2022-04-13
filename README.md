@@ -7,20 +7,20 @@
 Create first simple route with uri /first-route and controller `Home` with method `first` for all methods
 
 ```php
-$router->add('/first-route', 'v1\Homefirst');
+$router->add('/first-route', 'v1\Home::first');
 ```
 
 Create route with different methods
 
 ```php
-$router->get('/route-method', 'v1\Homeget');
-$router->post('/route-method', 'v1\Homepost');
-$router->put('/route-method', 'v1\Homeput');
-$router->patch('/route-method', 'v1\Homepatch');
-$router->delete('/route-method', 'v1\Homedelete');
-$router->options('/route-method', 'v1\Homeoptions');
-$router->map('GET|POST', '/route-method', 'v1\HomegetOrPost');
-$router->map('PUT|PATCH|DELETE', '/route-method', 'v1\HomeputOrPatchOrDelete');
+$router->get('/route-method', 'v1\Home::get');
+$router->post('/route-method', 'v1\Home::post');
+$router->put('/route-method', 'v1\Home::put');
+$router->patch('/route-method', 'v1\Home::patch');
+$router->delete('/route-method', 'v1\Home::delete');
+$router->options('/route-method', 'v1\Home::options');
+$router->map('GET|POST', '/route-method', 'v1\Home::getOrPost');
+$router->map('PUT|PATCH|DELETE', '/route-method', 'v1\Home::putOrPatchOrDelete');
 ```
 
 Declaring route is available for callable anonymoys function, declaring string or array
@@ -34,7 +34,7 @@ $router->add('/callable', function () {
 
 > Declaring with string
 ```php
-$router->get('/route-string', 'v1\v1\Homestring');
+$router->get('/route-string', 'v1\v1\Home::string');
 ```
 
 > Declaring with array
