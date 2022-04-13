@@ -30,55 +30,8 @@ class Handler {
 			'_REQUEST' => $_REQUEST,
 			'_HEADERS' => getallheaders(),
 		];
-
-		$html = '
-		<!doctype html>
-			<html>
-			<head>
-			<meta charset="utf-8">
-				<title>Fatal Error</title>
-				<style type="text/css">
-					body {
-						margin: 0;
-						padding: 0;
-						width: 100%;
-						margin: 0px auto 0px;
-						background-color: #18181a;
-					}
-					#json-input {
-						display: none;
-					}
-					#json-display {
-						margin: 0;
-						padding: 10px 20px;
-					}
-				</style>
-			</head>
-			<body>
-
-			<script src="https://jophiel.k-websrv-dev.it/assets/template/vendor/jquery/jquery-3.3.1.js"></script>
-			<script type="text/javascript" src="https://jophiel.k-websrv-dev.it/assets/template/vendor/json-viewer/dist/jquery.json-editor.min.js"></script>
-				<textarea id="json-input">
-					'.json_encode($error).'
-
-				</textarea>
-				<pre id="json-display"></pre>
-
-				<script type="text/javascript">
-
-					function getJson() {
-						try {
-							return JSON.parse($("#json-input").val());
-						} catch (ex) {
-							alert("Wrong JSON Format: " + ex);
-						}
-					}
-
-					var editor = new JsonEditor("#json-display", getJson());
-				</script>
-			</body>
-			</html>
-		';
-		echo $html;
+		
+		header('Content-Type: application/json; charset=utf-8');
+		echo json_encode($error);
 	}
 }

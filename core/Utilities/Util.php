@@ -8,9 +8,18 @@ use DateTime;
 
 class Util {
 
-	public static function dump($arr, $close = true) :string {
-		var_dump($arr);
-		if($close){ exit; }
+	public static function dump($arr, $close = true) {
+		
+		if($close){
+			echo '<pre>';
+			var_dump($arr);
+			echo '<pre><hr />';
+			exit;
+		} else {
+			echo '<pre>';
+			var_dump($arr);
+			echo '<pre><hr />';
+		}
 	}
 
 	public static function cron() : string {

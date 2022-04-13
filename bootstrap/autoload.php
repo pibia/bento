@@ -14,7 +14,6 @@ require_once __DIR__ . '/../core/Support/helpers.php';
 
 use Core\{
 	Routing\Router,
-	Utilities\Util,
 };
 
 use \Dotenv\Dotenv as Env;

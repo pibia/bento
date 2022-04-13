@@ -16,19 +16,18 @@ use Core\{
 use Closure;
 use DI\ContainerBuilder;
 
-class Router {
+final class Router {
 
-	private static $instance;
+	protected static $instance;
 
-	public $uri = null;
-	private $preuri = null;
-	private $routes = [];
-	private $lastPath = null;
-	private $path = null;
-	private $slave = null;
-	private $group = '';
-	private $prefix = '';
-	private $cron = true;
+	protected $uri = null;
+	protected $routes = [];
+	protected $lastPath = null;
+	protected $path = null;
+	protected $slave = null;
+	protected $group = '';
+	protected $prefix = '';
+	protected $cron = true;
 
 	public function __construct(){
 		$this->setUri();
@@ -45,21 +44,30 @@ class Router {
 	private function setUri(){
 		$this->uri = trim(Request::getRequestUri(), '/');
 	}
-	
-	public function add(string $path, string $action){
+
+	public function add(string $path, mixed $action): object
+	{
 		
 		$r = $this->setParams($path);
 		$this->path .= $path;
-		
-		$this->routes[$r['path']]['action'] = [
-			'Controller' => explode('@', $action)[0],
-			'Method' => explode('@', $action)[1]
-		];
+
+		if (is_callable($action)) {
+			$this->routes[$r['path']]['callable'] = $action;
+		} elseif (is_array($action)) {
+			$this->routes[$r['path']]['action'] = [
+				'Controller' => $action[0],
+				'Method' => $action[1]
+			];
+		} else {
+			$this->routes[$r['path']]['action'] = [
+				'Controller' => explode('::', $action)[0],
+				'Method' => explode('::', $action)[1]
+			];
+		}
 
 		$this->routes[$r['path']]['params'] = $r['params'];
 		$this->routes[$r['path']]['request'] = $r['request'];
-		$this->routes[$r['path']]['auth'] = $r['auth'];
-		
+		$this->routes[$r['path']]['auth'] = isset($r['auth']) ?? $r['auth'];
 
 		$this->routes[$r['path']]['method'] = $r['method'];
 		$this->lastPath = $r['path'];
@@ -67,23 +75,70 @@ class Router {
 		return $this;
 	}
 
-	public function map(string $method, string $path, string $action){
+	public function get(string $path, mixed $action) : object {
+		$this->prefix = '';
+		$this->group = '';
+		
+		return $this->map('GET', $path, $action);
+	}
+
+	public function post(string $path, mixed $action) : object {
+		$this->prefix = '';
+		$this->group = '';
+		
+		return $this->map('POST', $path, $action);
+	}
+
+	public function put(string $path, mixed $action) : object {
+		$this->prefix = '';
+		$this->group = '';
+		
+		return $this->map('PUT', $path, $action);
+	}
+
+	public function delete(string $path, mixed $action) : object {
+		$this->prefix = '';
+		$this->group = '';
+		
+		return $this->map('DELETE', $path, $action);
+	}
+
+	public function options(string $path, mixed $action) : object {
+		$this->prefix = '';
+		$this->group = '';
+		
+		return $this->map('OPTIONS', $path, $action);
+	}
+
+	public function patch(string $path, mixed $action) : object {
+		$this->prefix = '';
+		$this->group = '';
+		
+		return $this->map('PATCH', $path, $action);
+	}
+
+	public function map(string $method, string $path, mixed $action){
 
 		$path = "{$this->prefix}/{$this->group}/{$path}";
+		$path = trim($path, '/');
 		
 		$r = $this->setParams($path);
 		$this->path .= $path;
-		
-		$class = [
-			'controller' => explode('@', $action)[0],
-			'method' => explode('@', $action)[1],
-		];
-		
 
-		$this->routes[$r['path']]['action'] = [
-			'Controller' => $class['controller'],
-			'Method' => $class['method'],
-		];
+		$this->routes[$r['path']]['action'] = [];
+		if (is_callable($action)) {
+			$this->routes[$r['path']]['callable'] = $action;
+		} elseif (is_array($action)) {
+			$this->routes[$r['path']]['action'] = [
+				'Controller' => $action[0],
+				'Method' => $action[1]
+			];
+		} else {
+			$this->routes[$r['path']]['action'] = [
+				'Controller' => explode('::', $action)[0],
+				'Method' => explode('::', $action)[1]
+			];
+		}
 
 		$this->routes[$r['path']]['params'] = $r['params'];
 		$this->routes[$r['path']]['request'] = $r['request'];
@@ -181,8 +236,8 @@ class Router {
 	public function middleware($action){
 
 		$class = [
-			'controller' => explode('@', $action)[0],
-			'method' => explode('@', $action)[1],
+			'controller' => explode('::', $action)[0],
+			'method' => explode('::', $action)[1],
 			'data' => [],
 		];
 
@@ -337,6 +392,9 @@ class Router {
 
 	private function executeAction(array $action){
 		
+		if(!empty($action['callable'])&&is_callable($action['callable'])){
+			$action['callable'](); exit;
+		}
 		if(!empty($action['middleware'])){
 			
 			$method = $action['middleware']['method'];
@@ -412,7 +470,12 @@ class Router {
 			}
 		}
 
-		return call_user_func_array([$controllerInstantiate, $method], $action['params']);
+		$r = call_user_func_array([$controllerInstantiate, $method], $action['params']);
+		if(is_string($r)){
+			echo $r;
+		} elseif(is_array($r)){
+			util::dump($r);
+		}
 	}
 
 	private function makefile(array $action){
@@ -425,7 +488,7 @@ class Router {
 
 	private function initializationController($controllerInstantiate, $action, $method){
 		if(!method_exists($controllerInstantiate, $method)){
-			Api::error('500', 'Method "'.$method.'" not found in '.$class.'.');
+			Api::error('500', 'Method "'.$method.'" not found in '.get_class($controllerInstantiate).'.');
 		}
 
 		if(!empty($action['middleware'])){
@@ -454,8 +517,9 @@ class Router {
 	}
 
 	public function run(){
+		
 		if(isset($this->routes[$this->uri])){
-
+			
 			if(
 				!empty($this->routes[$this->uri]['map'])
 				&&!in_array($this->routes[$this->uri]['method'], $this->routes[$this->uri]['map'])
