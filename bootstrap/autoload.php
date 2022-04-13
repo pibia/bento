@@ -4,9 +4,9 @@ namespace Bootstrap;
 
 try {
 	if (!@include_once(__DIR__ . '/../vendor/autoload.php')) {
-		throw new Exception('Composer is not initialized');
+		throw new \Exception('Composer is not initialized');
 	}
-} catch (Exception $e) {
+} catch (\Exception $e) {
 	exit($e->getMessage());
 }
 
