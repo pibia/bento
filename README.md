@@ -10,7 +10,7 @@ Create first simple route with uri /first-route and controller `Home` with metho
 $router->add('/first-route', 'v1\Home::first');
 ```
 
-Create route with different methods
+Create route with different methods. Allowed methods: `get`, `post`, `put`, `delete`, `options` and `patch`.
 
 ```php
 $router->get('/route-method', 'v1\Home::get');

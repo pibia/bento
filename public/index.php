@@ -12,7 +12,6 @@ define('ErrorException', 'Core\Errors\Handler::exceptionHandler');
  * Define timezone
  */
 define('Timezone', 'Europe/Rome');
-
 date_default_timezone_set(Timezone);
 
 /**

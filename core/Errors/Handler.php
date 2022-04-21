@@ -4,7 +4,7 @@ namespace Core\Errors;
 
 use Core\Utilities\Util;
 
-class Handler {
+final class Handler {
 
 	public static function errorHandler($level, $message, $file, $line){
 		if (error_reporting() !== 0) {

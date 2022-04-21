@@ -61,20 +61,4 @@ abstract class Main {
 		
 		$this->model = $model;
 	}
-
-	public function wait(){
-		$counter = 0;
-		
-		while(!file_exists($_ENV['QUEUE_API_DIR'].$this->fileforresults.'.ela')){
-			usleep(250000); //waits a quarter of second
-			$counter ++;
-			if($counter >= 200) break;
-		}
-
-		if(@$content = json_decode(file_get_contents($_ENV['QUEUE_API_DIR'].$this->fileforresults.'.ela'))){
-			Json::set($content->result)->send();
-		} else {
-			Api::error('408', 'Timeout api call');
-		}
-	}
 }

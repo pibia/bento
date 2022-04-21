@@ -8,63 +8,20 @@
  |_.__/ \___|_| |_|\__\___/ 
 					routing
  ---------------------------
+**/
 
-* [API QUEUE] Aprire la coda e avere risposta *
-	# Per abilitare o disabilitare l'api queue
-	# bisogna inserire nel .env il boolean true/false la variabile WAIT_API
-
-	# .env
-	WAIT_API=true
-
-	# Per sbloccare una chiamata api in richiesta
-	# Il cron è gestito dal controller Cron
-	# creare automatismo per eseguire chiamata e inserire il parametro cron:
-
-	# Curl POST http://localhost:3200/api/v1/cron
-	{
-		"cron":1
-	}
-
-	# Per impedire che una rotta non passi attraverso il cron API QUEUE (se abilitata)
-	# aggiungere il metodo ->cron(false)
-
-	$router->map('GET', 'user/view/{id}', 'v1\User::view')->cron(false);
-*/
-
- 
-$router->prefix('api/', function() use ($router){
-
-	$router->group('v1/', function() use ($router) {
-		$router->map('GET', 'composer', 'v1\Test::composer');
-		$router->map('GET', 'test/{id}', 'v1\Test::view');
-		$router->map('POST', 'test/{id}/{name}/{surname}', 'v1\Test::create');
-	});
-
-});
-/*
-$router->prefix('api/', function() use ($router){
-
-	$router->group('v1/', function() use ($router) {
-		$router->group('dashboard/', function() use ($router) {
-			$router->map('GET', 'test/{id}', 'v1\Test::view');
-			$router->map('GET', 'test2/{id}', 'v1\Test::view');
-		});
-	});
-
-});
-*/
-/*
-* Gestione auth con varie tipologie di autenticazione *
+/**	
+	* Gestione auth con varie tipologie di autenticazione *
 	
 	# Il sistema accetta come middleware più tipologie di auth tra cui:
 	#
 	# Tipologia	 Metodo			  Parametri
 	# -------------------------------------------
-	# Bearer		Header			   Authorization: Bearer <token>
-	# Token		 Header|POST		  token=<token>
-	# User		  POST				 username=<username>&&password=<password>
-	# Basic		 Header			   username:password || base64_encode(username:password)
-	# JWT		   POST|Cookie		  auth_jwt=<token>
+	# Bearer	Header			Authorization: Bearer <token>
+	# Token		Header|POST		token=<token>
+	# User		POST			username=<username>&&password=<password>
+	# Basic		Header			username:password || base64_encode(username:password)
+	# JWT		POST|Cookie		auth_jwt=<token>
 */
 $router->prefix('auth/', function() use ($router){
 	$router->group('v1/', function() use ($router) {
@@ -85,15 +42,20 @@ $router->prefix('api/', function() use ($router){
 		$router->map('GET', 'time', 'v1\Test::time');
 		$router->map('GET', 'utc/{timezone}', 'v1\Test::time');
 	});
-});
-
-
-
+}); 
 
 $router->get('/test-array', [v1\Index::class, 'array']);
 $router->get('/test-string', 'v1\Index::string');
 
+$router->group('/users', function () use ($router) {
+	$router->map('GET', '{id}', [v1\Users::class, 'get']);
+	$router->map('POST', '{id}', [v1\Users::class, 'create']);
+	$router->map('DELETE', '{id}', [v1\Users::class, 'delete']);
+});
 
-$router->add('/', function () {
-	echo 'You called anonymous function';
+
+// Anonymous function
+$browser = $_SERVER['HTTP_USER_AGENT'];
+$router->add('/', function () use ($browser) {
+	echo 'You called anonymous function with browser '.$browser;
 });

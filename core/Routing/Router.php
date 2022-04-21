@@ -27,10 +27,9 @@ final class Router {
 	protected $slave = null;
 	protected $group = '';
 	protected $prefix = '';
-	protected $cron = true;
 
 	public function __construct(){
-		$this->setUri();
+		//$this->setUri();
 	}
 
 	public static function getInstance(){
@@ -245,12 +244,6 @@ final class Router {
 		return $this;
 	}
 
-	public function cron($active = true){
-
-		$this->routes[$this->lastPath]['cron'] = $active;
-		return $this;
-	}
-
 	public function api(bool $api = false){
 
 		if(is_null($this->lastPath)){ return; }
@@ -422,23 +415,14 @@ final class Router {
 			$action['middleware'] = call_user_func_array([$controllerInstantiate, $method], $action['params']);
 			
 		}
-
-		if(!isset($action['cron'])){
-			$action['cron'] = $this->cron;
-		}
 		
 		$method = $action['action']['Method'];
 
 		$controller = $action['action']['Controller'];
 		$class = '\App\Controllers\\'.$controller;
-		$model = '\App\Models\\'.$controller;
 		
 		if(!class_exists($class)){
 			Api::error('500', 'Class "'.$class.'" not found.');
-		}
-
-		if(!class_exists($model)){
-			Api::error('500', 'Model "'.$model.'" not found.');
 		}
 		
 		/**
@@ -451,45 +435,31 @@ final class Router {
 		$containerBuilder = new ContainerBuilder;
 		
 		$container = $containerBuilder->build();
-		
 		$controllerInstantiate = $container->get($class);
-		
 		$this->initializationController($controllerInstantiate, $action, $method);
-		
-		$controllerInstantiate->setModel($container->get($model));
-		
-		// Verifico se è attivo e abilitato il wait api
-		if(filter_var($_ENV['WAIT_API'], FILTER_VALIDATE_BOOLEAN)){
-			if(
-				!isset($action['request']->json['cron'])
-				&&(!empty($action['cron'])&&$action['cron'])
-			){
-				$file = $this->makefile($action);
-				$controllerInstantiate->fileforresults = $file;			
-				$method = "wait";
-			}
-		}
 
+		$model = '\App\Models\\' . $controller;
+		if (class_exists($model)) {
+			
+			$controllerInstantiate->setModel($container->get($model));
+		}
+		
 		$r = call_user_func_array([$controllerInstantiate, $method], $action['params']);
-		if(is_string($r)){
+		$this->generateReturn($r);
+	}
+
+	private function generateReturn(mixed $r) : void {
+		if (is_string($r)) {
 			echo $r;
-		} elseif(is_array($r)){
+		} elseif (is_array($r)) {
 			util::dump($r);
 		}
 	}
 
-	private function makefile(array $action){
-		$filename = Util::cron();
-		if(file_put_contents($_ENV['QUEUE_API_DIR'].$filename.'.json', Util::prettyPrint(json_encode($action))))
-			return $filename;
-		else
-			Api::error('500', "{$_ENV['QUEUE_API_DIR']} is not writeable.");
-	}
-
-	private function initializationController($controllerInstantiate, $action, $method){
+	private function initializationController($controllerInstantiate, $action, $method) : void {
 		if(!method_exists($controllerInstantiate, $method)){
 			Api::error('500', 'Method "'.$method.'" not found in '.get_class($controllerInstantiate).'.');
-		}
+		} 
 
 		if(!empty($action['middleware'])){
 			$controllerInstantiate->setMiddleware($action['middleware']);
@@ -516,7 +486,8 @@ final class Router {
 		}
 	}
 
-	public function run(){
+	public function run(string $uri){
+		$this->uri = $uri;
 		
 		if(isset($this->routes[$this->uri])){
 			

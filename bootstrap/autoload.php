@@ -14,7 +14,9 @@ require_once __DIR__ . '/../core/Support/helpers.php';
 
 use Core\{
 	Routing\Router,
+	Http\Request,
 };
+
 
 use \Dotenv\Dotenv as Env;
 
@@ -42,9 +44,9 @@ final class Kernel
 
 	public static function run()
 	{
-
+		
 		$router = new Router();
-		require_once __DIR__ . '/../app/Routes.php';
-		$router->run();
+		include __DIR__ . '/../app/Routes.php';
+		$router->run(trim(Request::getRequestUri(), '/'));
 	}
 }

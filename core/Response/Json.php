@@ -22,9 +22,10 @@ class Json {
 		return new self();
 	}
 
-	public function send($json = false){
+	public function send($code = 200, $json = false) : string {
 		header("Content-Type: application/json");
-		
+		http_response_code($code);
+
 		$this->data = self::$_data;
 
 		if($json){ $this->data = $json; }
